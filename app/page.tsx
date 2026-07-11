@@ -1,21 +1,19 @@
 import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/Hero";
-import { BrandWorld } from "@/components/BrandWorld";
-import { Configurator } from "@/components/Configurator";
-import { Science } from "@/components/Science";
+import { FaceScan } from "@/components/FaceScan";
+import { IntroTitle } from "@/components/IntroTitle";
+import { Waitlist } from "@/components/Waitlist";
 import { Footer } from "@/components/Footer";
 
 export default function HomePage() {
   return (
-    <>
+    <div className="grain">
       <Navbar />
       <main>
-        <Hero />
-        <BrandWorld />
-        <Science />
-        <Configurator />
+        <FaceScan />
+        <IntroTitle />
+        <Waitlist />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 /**
  * Post-checkout landing. Looks the waitlist row up by the Stripe session
  * id (server-side, service role — never exposed). The webhook may land a
- * beat after redirect, so 'pending' is rendered as "confirming".
+ * beat after redirect, so 'pending' renders as "confirming".
  */
 export default async function SuccessPage({
   searchParams,
@@ -39,31 +39,31 @@ export default async function SuccessPage({
   const active = status === "active_waitlist";
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-hero-radial px-4">
-      <div className="card-mint w-full max-w-md rounded-lg p-8 text-center !shadow-ambient-lg">
+    <main className="grain flex min-h-screen items-center justify-center bg-night px-5">
+      <div className="w-full max-w-md rounded-2xl border border-frost/10 bg-night-2 p-10 text-center shadow-beam-lg">
         <div className="flex justify-center">
           <Logo />
         </div>
-        <p className="vial-label mt-8 text-primary">
-          {active ? "STATUS · ACTIVE WAITLIST" : "STATUS · CONFIRMING PAYMENT"}
+        <p className="hud-signal mt-10">
+          {active ? "STATUS · CONFIRMED" : "STATUS · CONFIRMING"}
         </p>
-        <h1 className="mt-3 font-headline text-headline-lg-m font-bold">
-          {active ? "You're officially in. ✧" : "Almost there…"}
+        <h1 className="mt-4 font-headline text-4xl font-bold text-frost">
+          {active ? "You're in." : "Almost there…"}
         </h1>
-        <p className="mt-3 text-body-md text-on-surface-variant">
+        <p className="mt-4 text-fog">
           {active
-            ? "Your formula is locked and your confirmation email is on its way."
-            : "Your payment is being verified — your spot activates within a minute and you'll get an email confirmation."}
+            ? "Your spot is locked. We'll email you the moment your scan is ready."
+            : "Your reservation is being confirmed — it activates within a minute and you'll get an email."}
         </p>
         {position !== null && (
-          <div className="mt-6 rounded-lg bg-secondary-container/60 px-6 py-4">
-            <span className="vial-label !text-secondary-on-container">YOUR PLACE IN LINE</span>
-            <p className="font-headline text-[44px] font-bold leading-tight text-primary">
+          <div className="mt-8 rounded-xl border border-signal/15 bg-signal/[0.05] px-6 py-5">
+            <span className="hud">YOUR PLACE IN LINE</span>
+            <p className="mt-1 font-headline text-6xl font-bold leading-tight text-signal">
               #{position}
             </p>
           </div>
         )}
-        <Link href="/" className="btn-primary mt-8">
+        <Link href="/" className="btn-beam mt-10 w-full">
           Back to Lumin
         </Link>
       </div>

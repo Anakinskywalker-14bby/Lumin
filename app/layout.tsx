@@ -18,15 +18,14 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Lumin — AI Skin Intelligence",
+    default: "Lumin — See your skin like never before",
     template: "%s · Lumin",
   },
   description:
-    "Clinical-grade AI skin analysis from a single selfie. Personalized routines, whole-food infusions, and dermatology-level insight — without the clinic.",
+    "One scan. A powerful AI reads your face and matches you with products from brands you already love. Join the waitlist.",
   openGraph: {
-    title: "Lumin — AI Skin Intelligence",
-    description:
-      "Clinical-grade AI skin analysis from a single selfie. Join the waitlist.",
+    title: "Lumin — See your skin like never before",
+    description: "Get a facial scan by a powerful AI. Join the waitlist.",
     type: "website",
     siteName: "Lumin",
   },

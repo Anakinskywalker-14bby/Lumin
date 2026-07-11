@@ -2,139 +2,105 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Lumin · Nolan cut — deep-black cinema, teal signal, one warm ember ── */
 :root {
-  --surface: #f8fafb;
-  --on-surface: #191c1d;
-  --primary: #016464;
-  --secondary-container: #fbd9c1;
-  --icy-mint: #e9fbfa;
+  --night: #04070a;
+  --night-2: #0a1114;
+  --signal: #8ff5f0;
+  --signal-dim: #2e6a68;
+  --ember: #fbd9c1;
+  --fog: #9db4b6;
+  --white: #edf4f4;
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--night);
 }
 
 body {
-  @apply bg-surface text-on-surface font-body antialiased;
+  @apply bg-night text-frost font-body antialiased;
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: #a4f0ef;
-  color: #002020;
+  background: #8ff5f0;
+  color: #04070a;
+}
+
+/* Film grain — feTurbulence, barely there, always moving the light */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Vignette — the projector's edge */
+.vignette {
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 45%,
+    transparent 0%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
 }
 
 @layer components {
-  /* Pill-shaped primary action — solid teal, tactile scale-down on tap */
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5
-      font-headline text-body-md font-semibold text-on-primary shadow-ambient
-      transition-all duration-200 hover:bg-[#0e6969] hover:shadow-ambient-lg
+  /* HUD label — the instrument-panel voice */
+  .hud {
+    @apply font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-fog;
+  }
+
+  .hud-signal {
+    @apply font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-signal;
+  }
+
+  /* Primary action — a beam of teal in the dark */
+  .btn-beam {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-signal px-8 py-4
+      font-headline text-[15px] font-bold tracking-wide text-night
+      transition-all duration-200
+      hover:shadow-[0_0_44px_rgba(143,245,240,0.35)] hover:brightness-110
       active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2
-      focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50
-      disabled:pointer-events-none;
+      focus-visible:ring-signal focus-visible:ring-offset-2 focus-visible:ring-offset-night
+      disabled:opacity-40 disabled:pointer-events-none;
   }
 
-  /* Peach secondary action */
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-secondary-container
-      px-7 py-3.5 font-headline text-body-md font-semibold text-secondary-on-container
-      transition-all duration-200 hover:brightness-[0.97] active:scale-[0.97]
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary;
-  }
-
-  /* Teal ghost */
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-primary/20
-      bg-transparent px-7 py-3.5 font-headline text-body-md font-semibold text-primary
-      transition-all duration-200 hover:bg-primary/5 active:scale-[0.97];
-  }
-
-  /* White → Icy Mint gradient card with ambient teal shadow + ghost border */
-  .card-mint {
-    @apply rounded-lg bg-card-mint border border-primary/10 shadow-ambient;
-  }
-
-  /* Frosted glass surface (nav, floating action cards) */
-  .glass {
-    @apply bg-white/65 backdrop-blur-xl border-b border-primary/10;
-  }
-
-  /* Geist "labeled-vial" category label */
-  .vial-label {
-    @apply font-label text-label-sm uppercase tracking-[0.05em] text-on-surface-variant;
-  }
-
-  /* Selection chip — pill, technical categorized look */
-  .chip {
-    @apply inline-flex cursor-pointer select-none items-center gap-1.5 rounded-full
-      border border-transparent bg-surface-container px-4 py-2 font-label text-label-sm
-      text-on-surface-variant transition-all duration-150 hover:bg-surface-container-high
-      active:scale-[0.96];
-  }
-
-  .chip-active {
-    @apply border-primary/30 bg-primary text-on-primary shadow-glow;
+  .btn-void {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-signal/25
+      px-8 py-4 font-headline text-[15px] font-semibold text-signal
+      transition-all duration-200 hover:border-signal/60 hover:bg-signal/5
+      active:scale-[0.97];
   }
 }
 
-/* ── Premium range slider (Clinical Radiance) ─────────────────────────── */
-input[type="range"].lumin-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 9999px;
-  background: linear-gradient(
-    to right,
-    #016464 0%,
-    #016464 var(--fill, 50%),
-    #e1e3e4 var(--fill, 50%),
-    #e1e3e4 100%
-  );
-  outline: none;
-  cursor: pointer;
+/* Waitlist input — a thin line of light */
+.input-void {
+  @apply w-full rounded-full border border-frost/15 bg-white/[0.04] px-6 py-4
+    text-center text-[16px] text-frost placeholder:text-fog/50
+    transition-all duration-200 backdrop-blur-sm;
 }
-input[type="range"].lumin-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 9999px;
-  background: #ffffff;
-  border: 3px solid #016464;
-  box-shadow: 0 2px 10px rgba(1, 100, 100, 0.25);
-  transition: transform 0.15s ease;
-}
-input[type="range"].lumin-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.12);
-}
-input[type="range"].lumin-slider::-webkit-slider-thumb:active {
-  transform: scale(0.95);
-}
-input[type="range"].lumin-slider::-moz-range-thumb {
-  width: 26px;
-  height: 26px;
-  border-radius: 9999px;
-  background: #ffffff;
-  border: 3px solid #016464;
-  box-shadow: 0 2px 10px rgba(1, 100, 100, 0.25);
-}
-input[type="range"].lumin-slider::-moz-range-track {
-  height: 6px;
-  border-radius: 9999px;
-  background: #e1e3e4;
-}
-input[type="range"].lumin-slider::-moz-range-progress {
-  height: 6px;
-  border-radius: 9999px;
-  background: #016464;
+.input-void:focus {
+  @apply outline-none border-signal/60 bg-white/[0.06];
+  box-shadow: 0 0 32px rgba(143, 245, 240, 0.12);
 }
 
-/* Text inputs — faint teal border → 2px solid teal on focus */
-.lumin-input {
-  @apply w-full rounded-lg border border-primary/25 bg-white px-5 py-3.5 text-body-md
-    text-on-surface placeholder:text-outline transition-all duration-150;
+/* Letterbox bars */
+.letterbox {
+  @apply pointer-events-none absolute inset-x-0 z-20 bg-night;
 }
-.lumin-input:focus {
-  @apply outline-none border-2 border-primary px-[19px] py-[13px];
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
