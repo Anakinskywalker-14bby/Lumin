@@ -3,11 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { isValidEmail } from "@/lib/utils";
+import { Magnetic } from "@/components/Magnetic";
 
-/**
- * The only ask on the page:
- * join the waitlist → get a facial scan by a powerful AI.
- */
 export function Waitlist() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +25,6 @@ export function Waitlist() {
         body: JSON.stringify({ email }),
       });
 
-      // Defensive parse — a crashed function returns an empty body.
       let data: { url?: string; error?: string } = {};
       try {
         data = await res.json();
@@ -56,11 +52,19 @@ export function Waitlist() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-120px" }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-xl text-center"
+        className="w-full max-w-2xl text-center"
       >
-        <h2 className="font-headline text-4xl font-bold leading-tight text-frost md:text-6xl">
-          Join the waitlist.
-        </h2>
+        <div className="overflow-hidden">
+          <motion.h2
+            initial={{ y: "110%" }}
+            whileInView={{ y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="display-xl text-[13vw] md:text-[5.5vw]"
+          >
+            JOIN THE WAITLIST.
+          </motion.h2>
+        </div>
         <p className="mt-5 text-lg text-fog md:text-xl">
           Get a facial scan by a powerful AI.
         </p>
@@ -75,9 +79,16 @@ export function Waitlist() {
             className="input-void"
             aria-label="Email address"
           />
-          <button type="submit" disabled={submitting} className="btn-beam w-full">
-            {submitting ? "Opening secure checkout…" : "Reserve my spot — $1"}
-          </button>
+          <Magnetic strength={0.3}>
+            <button
+              type="submit"
+              disabled={submitting}
+              data-cursor="pointer"
+              className="btn-beam w-full"
+            >
+              {submitting ? "Opening secure checkout…" : "Reserve my spot — $1"}
+            </button>
+          </Magnetic>
           {error && (
             <p role="alert" className="text-sm text-ember/90">
               {error}

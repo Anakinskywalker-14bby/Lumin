@@ -1,18 +1,19 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Lumin — "Nolan cut". Deep-black cinema, one teal signal, one warm ember.
+ * Lumin — "Void cut". Deep-black cinema, one electric volt-lime signal,
+ * one bioluminescent pink pulse for detections.
  */
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        night: { DEFAULT: "#04070a", 2: "#0a1114", 3: "#101a1e" },
-        signal: { DEFAULT: "#8ff5f0", dim: "#2e6a68", deep: "#016464" },
-        ember: "#fbd9c1",
-        fog: "#9db4b6",
-        frost: "#edf4f4",
+        night: { DEFAULT: "#050505", 2: "#0f0f0f", 3: "#161616" },
+        signal: { DEFAULT: "#d9ff3b", dim: "#5a6b14", deep: "#8fb800" },
+        ember: "#ff9ee0",
+        fog: "#8a9490",
+        frost: "#f2f5f0",
       },
       fontFamily: {
         headline: ["var(--font-manrope)", "system-ui", "sans-serif"],
@@ -20,8 +21,9 @@ const config: Config = {
         label: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        beam: "0 0 44px rgba(143, 245, 240, 0.25)",
-        "beam-lg": "0 0 90px rgba(143, 245, 240, 0.18)",
+        beam: "0 0 44px rgba(217, 255, 59, 0.25)",
+        "beam-lg": "0 0 90px rgba(217, 255, 59, 0.16)",
+        pulse: "0 0 24px rgba(255, 158, 224, 0.45)",
       },
       keyframes: {
         sparkle: {
@@ -39,8 +41,8 @@ const config: Config = {
       },
       animation: {
         sparkle: "sparkle 2.4s ease-in-out infinite",
-        "pulse-ring": "pulse-ring 1.8s cubic-bezier(0.2,0.6,0.4,1) infinite",
-        scanline: "scanline 5.5s linear infinite",
+        "pulse-ring": "pulse-ring 1.4s cubic-bezier(0.2,0.6,0.4,1) infinite",
+        scanline: "scanline 6s linear infinite",
       },
     },
   },

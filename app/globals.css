@@ -2,19 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Lumin · Nolan cut — deep-black cinema, teal signal, one warm ember ── */
+/* ── Lumin · Void cut — #050505 cinema, volt-lime signal, pink pulse ──── */
 :root {
-  --night: #04070a;
-  --night-2: #0a1114;
-  --signal: #8ff5f0;
-  --signal-dim: #2e6a68;
-  --ember: #fbd9c1;
-  --fog: #9db4b6;
-  --white: #edf4f4;
+  --night: #050505;
+  --night-2: #0f0f0f;
+  --signal: #d9ff3b;
+  --ember: #ff9ee0;
+  --fog: #8a9490;
+  --frost: #f2f5f0;
 }
 
 html {
-  scroll-behavior: smooth;
   background: var(--night);
 }
 
@@ -23,12 +21,23 @@ body {
   overflow-x: hidden;
 }
 
-::selection {
-  background: #8ff5f0;
-  color: #04070a;
+/* Custom cursor takes over on precision pointers */
+@media (pointer: fine) {
+  body,
+  a,
+  button,
+  input,
+  [role="button"] {
+    cursor: none !important;
+  }
 }
 
-/* Film grain — feTurbulence, barely there, always moving the light */
+::selection {
+  background: #d9ff3b;
+  color: #050505;
+}
+
+/* Film grain */
 .grain::after {
   content: "";
   position: fixed;
@@ -37,22 +46,20 @@ body {
   height: 200%;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.038;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Vignette — the projector's edge */
 .vignette {
   background: radial-gradient(
     ellipse 90% 70% at 50% 45%,
     transparent 0%,
     transparent 55%,
-    rgba(0, 0, 0, 0.55) 100%
+    rgba(0, 0, 0, 0.6) 100%
   );
 }
 
 @layer components {
-  /* HUD label — the instrument-panel voice */
   .hud {
     @apply font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-fog;
   }
@@ -61,12 +68,16 @@ body {
     @apply font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-signal;
   }
 
-  /* Primary action — a beam of teal in the dark */
+  /* Brutalist display type */
+  .display-xl {
+    @apply font-headline font-extrabold uppercase leading-[0.92] tracking-[-0.02em] text-frost;
+  }
+
   .btn-beam {
     @apply inline-flex items-center justify-center gap-2.5 rounded-full bg-signal px-8 py-4
       font-headline text-[15px] font-bold tracking-wide text-night
       transition-all duration-200
-      hover:shadow-[0_0_44px_rgba(143,245,240,0.35)] hover:brightness-110
+      hover:shadow-[0_0_44px_rgba(217,255,59,0.35)] hover:brightness-110
       active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2
       focus-visible:ring-signal focus-visible:ring-offset-2 focus-visible:ring-offset-night
       disabled:opacity-40 disabled:pointer-events-none;
@@ -80,7 +91,6 @@ body {
   }
 }
 
-/* Waitlist input — a thin line of light */
 .input-void {
   @apply w-full rounded-full border border-frost/15 bg-white/[0.04] px-6 py-4
     text-center text-[16px] text-frost placeholder:text-fog/50
@@ -88,12 +98,18 @@ body {
 }
 .input-void:focus {
   @apply outline-none border-signal/60 bg-white/[0.06];
-  box-shadow: 0 0 32px rgba(143, 245, 240, 0.12);
+  box-shadow: 0 0 32px rgba(217, 255, 59, 0.12);
 }
 
-/* Letterbox bars */
 .letterbox {
   @apply pointer-events-none absolute inset-x-0 z-20 bg-night;
+}
+
+/* Faint tactical grid over scan subjects */
+.scan-grid {
+  background-image: linear-gradient(rgba(217, 255, 59, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 255, 59, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 
 @media (prefers-reduced-motion: reduce) {

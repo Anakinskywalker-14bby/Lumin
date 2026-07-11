@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import Slideshow from "@/components/ui/slideshow";
-import { FaceScan } from "@/components/FaceScan";
+import { Investigator, WOMAN, MAN } from "@/components/Investigator";
 import { IntroTitle } from "@/components/IntroTitle";
 import { Waitlist } from "@/components/Waitlist";
 import { Footer } from "@/components/Footer";
@@ -11,7 +11,8 @@ export default function HomePage() {
       <Navbar />
       <main>
         <Slideshow />
-        <FaceScan />
+        <Investigator subject={WOMAN} />
+        <Investigator subject={MAN} />
         <IntroTitle />
         <Waitlist />
       </main>
