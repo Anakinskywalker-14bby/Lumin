@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/Navbar";
+import Slideshow from "@/components/ui/slideshow";
 import { FaceScan } from "@/components/FaceScan";
 import { IntroTitle } from "@/components/IntroTitle";
 import { Waitlist } from "@/components/Waitlist";
@@ -9,6 +10,7 @@ export default function HomePage() {
     <div className="grain">
       <Navbar />
       <main>
+        <Slideshow />
         <FaceScan />
         <IntroTitle />
         <Waitlist />
