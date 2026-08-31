@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Hanken_Grotesk } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
-import { Cursor } from "@/components/Cursor";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
@@ -20,14 +19,14 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Lumin — See your skin like never before",
+    default: "Lumin — Stop guessing. Start knowing.",
     template: "%s · Lumin",
   },
   description:
-    "One scan. A powerful AI reads your face and matches you with products from brands you already love. Join the waitlist.",
+    "AI skin analysis for the modern age. One scan matches you with products from brands you already love. Join the beta.",
   openGraph: {
-    title: "Lumin — See your skin like never before",
-    description: "Get a facial scan by a powerful AI. Join the waitlist.",
+    title: "Lumin — Stop guessing. Start knowing.",
+    description: "AI skin analysis for the modern age. Join the beta.",
     type: "website",
     siteName: "Lumin",
   },
@@ -38,10 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${manrope.variable} ${hanken.variable} ${GeistSans.variable}`}>
       <body>
-        <SmoothScroll>
-          <Cursor />
-          {children}
-        </SmoothScroll>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

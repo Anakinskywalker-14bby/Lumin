@@ -1,11 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,700;0,800;0,900;1,700;1,900&family=Epilogue:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Work+Sans:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Lumin · Void cut — #050505 cinema, volt-lime signal, pink pulse ──── */
+/* ── Lumin · Neo-brutalist landing + dark utility pages ─────────────── */
 :root {
+  --cream: #f9f9f7;
+  --ink: #1a1c1b;
+  --yellow: #e8e883;
+  --blue: #beeaf8;
+  --olive: #cbcb6a;
+  /* dark palette (success page + legacy components) */
   --night: #050505;
-  --night-2: #0f0f0f;
   --signal: #d9ff3b;
   --ember: #ff9ee0;
   --fog: #8a9490;
@@ -13,31 +20,65 @@
 }
 
 html {
-  background: var(--night);
+  background: var(--cream);
+  scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-night text-frost font-body antialiased;
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "Work Sans", sans-serif;
+  @apply antialiased;
   overflow-x: hidden;
 }
 
-/* Custom cursor takes over on precision pointers */
-@media (pointer: fine) {
-  body,
-  a,
-  button,
-  input,
-  [role="button"] {
-    cursor: none !important;
-  }
-}
-
 ::selection {
-  background: #d9ff3b;
-  color: #050505;
+  background: #e8e883;
+  color: #1a1c1b;
 }
 
-/* Film grain */
+/* ── Neo-brutalist primitives ───────────────────────────────────────── */
+.neo-shadow { box-shadow: 8px 8px 0px #1a1c1b; }
+.neo-shadow-sm { box-shadow: 4px 4px 0px #1a1c1b; }
+.neo-border { border: 3px solid #1a1c1b; }
+
+@keyframes dropForm {
+  0% { transform: scaleY(0.3) scaleX(0.6); opacity: 0; }
+  15% { transform: scaleY(1) scaleX(1); opacity: 1; }
+  30% { transform: scaleY(1.15) scaleX(0.88); }
+  45% { transform: scaleY(0) scaleX(0); opacity: 0; }
+  100% { transform: scaleY(0) scaleX(0); opacity: 0; }
+}
+
+@keyframes dropFall {
+  0% { transform: translateY(0px) scale(0); opacity: 0; }
+  40% { transform: translateY(0px) scale(0); opacity: 0; }
+  45% { transform: translateY(0px) scale(1); opacity: 1; }
+  85% { transform: translateY(180px) scale(0.7); opacity: 1; }
+  95% { transform: translateY(200px) scale(1.8, 0.3); opacity: 0.6; }
+  100% { transform: translateY(205px) scale(0); opacity: 0; }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+@keyframes floatSticker {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(-2deg) translateY(-6px); }
+}
+
+@keyframes floatStickerAlt {
+  0%, 100% { transform: rotate(2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-8px); }
+}
+
+.sticker-float { animation: floatSticker 3s ease-in-out infinite; }
+.sticker-float-alt { animation: floatStickerAlt 3.5s ease-in-out infinite; }
+
+/* ── Dark-theme utilities kept for /success + legacy components ─────── */
 .grain::after {
   content: "";
   position: fixed;
@@ -68,7 +109,6 @@ body {
     @apply font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-signal;
   }
 
-  /* Brutalist display type */
   .display-xl {
     @apply font-headline font-extrabold uppercase leading-[0.92] tracking-[-0.02em] text-frost;
   }
@@ -105,14 +145,32 @@ body {
   @apply pointer-events-none absolute inset-x-0 z-20 bg-night;
 }
 
-/* Faint tactical grid over scan subjects */
 .scan-grid {
   background-image: linear-gradient(rgba(217, 255, 59, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(217, 255, 59, 0.05) 1px, transparent 1px);
   background-size: 56px 56px;
 }
 
+/* Marquee + reveal helpers (legacy dark components) */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation-name: marquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+.reveal-mask { display: block; overflow: hidden; }
+.reveal-inner { display: block; }
+
 @media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .sticker-float,
+  .sticker-float-alt {
+    animation: none;
+  }
   *,
   *::before,
   *::after {
