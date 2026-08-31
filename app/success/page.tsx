@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export const metadata = { title: "You're in" };
+export const metadata = {
+  title: "You're in",
+  robots: { index: false, follow: false },
+};
 export const dynamic = "force-dynamic";
 
 /**

@@ -178,3 +178,7 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Deep Scan readout fill */
+@keyframes scanFill { from { width: 0; } }
+.scan-fill { animation: scanFill 1.2s cubic-bezier(0.22, 1, 0.36, 1) both; }

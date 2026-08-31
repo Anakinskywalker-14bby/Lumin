@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import svgPaths from "@/lib/svg-design";
 import { isValidEmail } from "@/lib/utils";
 
@@ -73,10 +74,9 @@ function Nav() {
         Lumin
       </div>
       <div className="hidden md:flex items-center gap-6">
-        {["TECH", "COMMUNITY", "DOCS"].map((l) => (
-          <span key={l} style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#1a1c1b", cursor: "pointer" }}>{l}</span>
-        ))}
-        <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#616207", textDecoration: "underline", cursor: "pointer" }}>BETA</span>
+        <Link href="/about" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#1a1c1b" }}>ABOUT</Link>
+        <a href="/#solution" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#1a1c1b" }}>HOW IT WORKS</a>
+        <a href="/#beta" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#616207", textDecoration: "underline" }}>BETA</a>
       </div>
       <a
         href="#beta"
@@ -165,7 +165,7 @@ function HeroSection() {
         {/* Right: image hero */}
         <div className="relative flex-shrink-0">
           <div className="neo-shadow neo-border overflow-hidden" style={{ width: "min(480px, 80vw)", aspectRatio: "3/4" }}>
-            <img src={imgHand} alt="Skincare products on hand" className="w-full h-full object-cover" />
+            <img src={imgHand} alt="Four skincare textures — cream, serum, and gel boosters — swatched on the back of a hand" className="w-full h-full object-cover" />
           </div>
           <div className="sticker-float-alt absolute -bottom-4 -right-6 neo-shadow-sm neo-border px-5 py-3" style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#1a1c1b" }}>
             HYDRATE NOW
@@ -183,7 +183,7 @@ function HeroSection() {
 function DropperAnimation() {
   return (
     <div className="relative w-full h-full flex items-center justify-center" style={{ minHeight: 380 }}>
-      <img src={imgDropper} alt="Dropper into bottle" className="w-full h-full object-cover absolute inset-0" />
+      <img src={imgDropper} alt="Glass dropper releasing a drop of clear serum into an open bottle" className="w-full h-full object-cover absolute inset-0" />
       <div className="absolute inset-0" style={{ background: "rgba(249,249,247,0.15)" }} />
 
       <svg
@@ -213,7 +213,7 @@ function DropperSection() {
       <div className="flex flex-col lg:flex-row min-h-[640px]">
         {/* Left: Glass Skin image */}
         <div className="relative flex-1 overflow-hidden min-h-[420px]" style={{ borderRight: "3px solid #1a1c1b" }}>
-          <img src={imgGlassSkin} alt="Glass Skin Facial" className="w-full h-full object-cover absolute inset-0" />
+          <img src={imgGlassSkin} alt="Close-up of a glowing glass-skin complexion with shimmering highlighter" className="w-full h-full object-cover absolute inset-0" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(26,28,27,0.15) 0%, rgba(26,28,27,0.6) 100%)" }} />
           <div className="absolute bottom-12 left-10 right-10">
             <div className="neo-shadow-sm neo-border px-4 py-2 inline-block mb-4" style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1.6px", color: "#1a1c1b" }}>
@@ -349,8 +349,21 @@ function SolutionSection() {
               One selfie. Lumin&apos;s AI reads your face and maps hydration,
               texture, and everyday concerns — instantly.
             </p>
-            <div className="neo-border flex items-center justify-center" style={{ background: "#e8e8e6", height: 200 }}>
-              <span style={{ fontFamily: "'Epilogue', sans-serif", fontWeight: 400, fontSize: 24, color: "#1a1c1b", opacity: 0.5 }}>Data Visualization</span>
+            <div className="neo-border p-6 flex flex-col justify-center gap-4" style={{ background: "#1a1c1b", height: 200 }}>
+              {[
+                { label: "HYDRATION", value: 72, color: "#beeaf8" },
+                { label: "TEXTURE", value: 58, color: "#e8e883" },
+                { label: "GLOW", value: 86, color: "#f9f9f7" },
+              ].map((m) => (
+                <div key={m.label} className="flex items-center gap-4">
+                  <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: "1.2px", color: "#f9f9f7", width: 96 }}>{m.label}</span>
+                  <div className="flex-1 h-4" style={{ background: "rgba(249,249,247,0.15)", border: "2px solid #f9f9f7" }}>
+                    <div className="h-full scan-fill" style={{ width: `${m.value}%`, background: m.color }} />
+                  </div>
+                  <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: m.color, width: 44, textAlign: "right" }}>{m.value}%</span>
+                </div>
+              ))}
+              <p style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: "1px", color: "rgba(249,249,247,0.5)", margin: 0, textTransform: "uppercase" }}>Sample readout — your scan will differ</p>
             </div>
           </div>
 
@@ -406,9 +419,9 @@ function GallerySection() {
   const { ref, visible } = useFadeIn();
 
   const panels = [
-    { img: imgNoGender, label: "UNIVERSAL", text: "Skincare has no gender.", color: "#f9f9f7" },
-    { img: imgClarity, label: "CLARITY", text: "Clarity Is The New Glow", color: "#e8e883" },
-    { img: imgCleanBS, label: "TRUTH", text: "Buzzwords are marketing. Your skin is real.", color: "#beeaf8" },
+    { img: imgNoGender, alt: "Water droplets on bare shoulders beside the words: skincare has no gender", label: "UNIVERSAL", text: "Skincare has no gender.", color: "#f9f9f7" },
+    { img: imgClarity, alt: "Freckled face with clear, hydrated skin in warm golden light", label: "CLARITY", text: "Clarity Is The New Glow", color: "#e8e883" },
+    { img: imgCleanBS, alt: "Serum dropper and glass bottle beside bold editorial typography", label: "TRUTH", text: "Buzzwords are marketing. Your skin is real.", color: "#beeaf8" },
   ];
 
   return (
@@ -423,7 +436,7 @@ function GallerySection() {
             className="relative overflow-hidden group min-h-[320px]"
             style={{ borderRight: i < 2 ? "3px solid #1a1c1b" : undefined, cursor: "pointer" }}
           >
-            <img src={p.img} alt={p.text} className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" />
+            <img src={p.img} alt={p.alt} className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" />
             <div
               className="absolute inset-0 flex flex-col justify-end p-8 opacity-0 group-hover:opacity-100 transition-all duration-500"
               style={{ background: "rgba(26,28,27,0.35)" }}
@@ -724,11 +737,15 @@ function BetaSection() {
 function NewFooter() {
   return (
     <footer className="flex flex-col md:flex-row gap-6 items-center justify-between px-6 md:px-16 py-12" style={{ background: "#beeaf8", borderTop: "3px solid #1a1c1b" }}>
-      <span style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontWeight: 900, fontSize: 30, color: "#001f27" }}>Lumin</span>
-      <div className="flex gap-6">
-        {["PRIVACY", "TERMS", "GITHUB", "DISCORD"].map((l) => (
-          <span key={l} style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27", cursor: "pointer" }}>{l}</span>
-        ))}
+      <div className="flex flex-col gap-3 items-center md:items-start">
+        <span style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontWeight: 900, fontSize: 30, color: "#001f27" }}>Lumin</span>
+        {/* Official Google "Add as preferred source" button */}
+        <div google-add-preferred-source-btn="" />
+      </div>
+      <div className="flex gap-6 flex-wrap justify-center">
+        <Link href="/about" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>ABOUT US</Link>
+        <Link href="/legal" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>PRIVACY &amp; TERMS</Link>
+        <a href="/#beta" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>JOIN BETA</a>
       </div>
       <span style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1.6px", color: "#001f27" }}>© 2026 LUMIN. BUILT FOR THE BOLD.</span>
     </footer>
