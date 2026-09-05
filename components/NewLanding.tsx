@@ -146,7 +146,8 @@ function HeroSection() {
         {/* Right: image hero */}
         <div className="relative flex-shrink-0">
           <div className="neo-shadow neo-border overflow-hidden" style={{ width: "min(480px, 80vw)", aspectRatio: "3/4" }}>
-            <img src={imgHand} alt="Four skincare textures — cream, serum, and gel boosters — swatched on the back of a hand" className="w-full h-full object-cover" />
+            {/* eslint-disable-next-line @next/next/no-img-element -- remote decorative asset; see note above */}
+              <img fetchPriority="high" decoding="async" src={imgHand} alt="Four skincare textures — cream, serum, and gel boosters — swatched on the back of a hand" className="w-full h-full object-cover" />
           </div>
           <div className="sticker-float-alt absolute -bottom-4 -right-6 neo-shadow-sm neo-border px-5 py-3" style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#1a1c1b" }}>
             HYDRATE NOW
@@ -164,7 +165,8 @@ function HeroSection() {
 function DropperAnimation() {
   return (
     <div className="relative w-full h-full flex items-center justify-center" style={{ minHeight: 380 }}>
-      <img src={imgDropper} alt="Glass dropper releasing a drop of clear serum into an open bottle" className="w-full h-full object-cover absolute inset-0" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- remote decorative asset */}
+              <img loading="lazy" decoding="async" src={imgDropper} alt="Glass dropper releasing a drop of clear serum into an open bottle" className="w-full h-full object-cover absolute inset-0" />
       <div className="absolute inset-0" style={{ background: "rgba(249,249,247,0.15)" }} />
 
       <svg
@@ -194,7 +196,8 @@ function DropperSection() {
       <div className="flex flex-col lg:flex-row min-h-[640px]">
         {/* Left: Glass Skin image */}
         <div className="relative flex-1 overflow-hidden min-h-[420px]" style={{ borderRight: "3px solid #1a1c1b" }}>
-          <img src={imgGlassSkin} alt="Close-up of a glowing glass-skin complexion with shimmering highlighter" className="w-full h-full object-cover absolute inset-0" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- remote decorative asset */}
+              <img loading="lazy" decoding="async" src={imgGlassSkin} alt="Close-up of a glowing glass-skin complexion with shimmering highlighter" className="w-full h-full object-cover absolute inset-0" />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(26,28,27,0.15) 0%, rgba(26,28,27,0.6) 100%)" }} />
           <div className="absolute bottom-12 left-10 right-10">
             <div className="neo-shadow-sm neo-border px-4 py-2 inline-block mb-4" style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1.6px", color: "#1a1c1b" }}>
@@ -417,7 +420,8 @@ function GallerySection() {
             className="relative overflow-hidden group min-h-[320px]"
             style={{ borderRight: i < 2 ? "3px solid #1a1c1b" : undefined, cursor: "pointer" }}
           >
-            <img src={p.img} alt={p.alt} className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" />
+            {/* eslint-disable-next-line @next/next/no-img-element -- remote decorative asset */}
+              <img loading="lazy" decoding="async" src={p.img} alt={p.alt} className="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" />
             <div
               className="absolute inset-0 flex flex-col justify-end p-8 opacity-0 group-hover:opacity-100 transition-all duration-500"
               style={{ background: "rgba(26,28,27,0.35)" }}
@@ -618,7 +622,7 @@ function NewFooter() {
         <Link href="/about" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>ABOUT US</Link>
         <Link href="/privacy" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>PRIVACY</Link>
         <Link href="/terms" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>TERMS</Link>
-        <a href="/#beta" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>JOIN FREE</a>
+        <Link href="/#beta" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>JOIN FREE</Link>
       </div>
       <span style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1.6px", color: "#001f27" }}>{`© ${new Date().getFullYear()} LUMIN. BUILT FOR THE BOLD.`}</span>
     </footer>
@@ -626,7 +630,13 @@ function NewFooter() {
 }
 
 // ─── Root ───────────────────────────────────────────────────────────
-export default function NewLanding() {
+/**
+ * `faq` is injected as a slot from the server component (app/page.tsx) so
+ * the FAQ copy and its matching FAQPage JSON-LD stay in one server-rendered
+ * source. Keeping it server-side means crawlers and AI engines read the
+ * answers straight out of the HTML with no hydration step.
+ */
+export default function NewLanding({ faq }: { faq?: React.ReactNode }) {
   return (
     <div style={{ background: "#f9f9f7" }}>
       <SiteNav />
@@ -636,6 +646,7 @@ export default function NewLanding() {
       <SolutionSection />
       <GallerySection />
       <GlowOClockSection />
+      {faq}
       <SignupSection />
       <NewFooter />
       <StickyCta />

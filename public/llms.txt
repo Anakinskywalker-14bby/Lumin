@@ -1,0 +1,52 @@
+# Lumin
+
+> Lumin is a free AI skin analysis tool. One selfie scan reads your skin and
+> matches you with skincare products from established brands. Lumin does not
+> manufacture products; it earns affiliate commission on recommendations,
+> disclosed on every placement.
+
+Lumin is pre-launch. The public site collects free waitlist signups and a
+short skin quiz. There is no payment at any stage.
+
+## What Lumin does
+
+- Reads everyday skin characteristics from a photo: hydration, texture,
+  visible pores, dark spots, fine lines, breakouts.
+- Builds a skin profile from a 13-question quiz (skin type, sensitivity,
+  primary concern, breakout pattern, post-blemish marks, routine depth,
+  lifestyle, climate, current treatments, pregnancy status, allergies,
+  monthly spend, demographics).
+- Matches that profile to products from brands the user already knows.
+
+Lumin provides cosmetic and wellness guidance only. It is not a medical
+device and does not diagnose, treat, or cure any condition.
+
+## Pricing
+
+Free. The waitlist, the skin quiz, and the launch scan carry no cost.
+Lumin earns affiliate commission from retailers when a user buys a
+recommended product; this never changes the price the user pays.
+See /pricing.md for machine-readable detail.
+
+## Key pages
+
+- /: product overview and free waitlist signup
+- /about: mission, affiliate-model transparency, privacy stance
+- /privacy: data collected, retention periods, deletion rights
+- /terms: waitlist terms, medical disclaimer, affiliate disclosure
+
+## Facts
+
+- Signup cost: $0
+- Beta capacity: 500 early users
+- Quiz length: 13 questions, about 2 minutes
+- Data retention: 24 months from last interaction; unverified signups
+  deleted after 90 days; verification links expire after 7 days
+- Face scans: not collected pre-launch; will require separate explicit
+  consent, and will never be used for model training without a distinct
+  opt-in the user can decline
+
+## Contact
+
+A dedicated support address is being provisioned. Until then, replies to any
+Lumin email reach the team.

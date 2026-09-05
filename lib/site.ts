@@ -6,7 +6,7 @@ export const SITE_URL =
 export const SITE_NAME = "Lumin";
 
 export const SITE_DESCRIPTION =
-  "AI skin analysis for the modern age. One scan matches you with skincare from brands you already love. Join the beta.";
+  "Free AI skin analysis. One scan matches you with skincare from brands you already love. No payment — join the beta.";
 
 /** Organization schema — used on the homepage. */
 export const organizationJsonLd = {
@@ -25,6 +25,22 @@ export const webSiteJsonLd = {
   name: SITE_NAME,
   url: SITE_URL,
 };
+
+/**
+ * FAQPage schema. Mirrors the visible FAQ exactly — schema that doesn't
+ * match on-page content violates Google's structured-data guidelines.
+ */
+export function faqJsonLd(faqs: readonly { q: string; a: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}
 
 /** BreadcrumbList schema for subpages. */
 export function breadcrumbJsonLd(items: { name: string; path: string }[]) {

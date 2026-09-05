@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci --include=dev
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test with coverage thresholds
+        run: npm run test:coverage
+
+      - name: Audit dependencies
+        # Fails the build on a high or critical advisory.
+        run: npm audit --audit-level=high
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build-time only. Real values live in Vercel; these let the
+          # production build compile without exposing anything.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+
+      - name: Fail if a secret-shaped string was committed
+        run: |
+          if git grep -nEI '(service_role|sk_live_|re_[A-Za-z0-9]{20,}|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9)' -- ':!*.md' ':!.github/**'; then
+            echo "::error::Possible secret committed to the repository."
+            exit 1
+          fi

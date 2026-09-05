@@ -22,6 +22,24 @@ export function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
+/**
+ * Escape a value before interpolating it into email HTML.
+ *
+ * Quiz input is sanitized (control chars stripped, length capped) but not
+ * HTML-escaped, because the web UI relies on React's contextual escaping.
+ * Emails are hand-built HTML strings with no such protection, so a name like
+ * `<a href="http://evil">click</a>` would render as a live link inside a
+ * message that appears to come from Lumin. Escape at the boundary.
+ */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /** Constant-time compare for opaque strings. */
 export function safeEqual(a: string, b: string): boolean {
   const ab = Buffer.from(a);
@@ -106,7 +124,7 @@ export function verificationEmail(token: string) {
 export function quizCompleteEmail(name: string, position: number) {
   return SHELL(`
     <h1 style="font-size:28px;font-weight:800;color:#1a1c1b;margin:0 0 16px;line-height:1.2">
-      You're in, ${name}.
+      You're in, ${escapeHtml(name)}.
     </h1>
     <p style="font-size:16px;color:#484739;line-height:1.7;margin:0 0 20px">
       Your skin profile is saved and your spot is locked. We'll email you the

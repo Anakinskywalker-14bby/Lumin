@@ -2,9 +2,15 @@ node_modules/
 .next/
 out/
 build/
+coverage/
+
+# Secrets. .env.production is committed deliberately and holds only
+# NEXT_PUBLIC_* values (see the comment at the top of that file).
 .env
 .env.local
 .env*.local
+.env.development
+
 .vercel
 *.tsbuildinfo
 next-env.d.ts

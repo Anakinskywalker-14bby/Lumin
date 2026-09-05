@@ -9,12 +9,13 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function ThankYouPage({
+export default async function ThankYouPage({
   searchParams,
 }: {
-  searchParams: { position?: string };
+  searchParams: Promise<{ position?: string }>;
 }) {
-  const raw = searchParams.position ?? "";
+  const params = await searchParams;
+  const raw = params.position ?? "";
   const position = /^\d{1,7}$/.test(raw) ? raw : null;
 
   return (

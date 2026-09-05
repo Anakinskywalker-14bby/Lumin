@@ -6,6 +6,8 @@ import { isValidEmail } from "@/lib/utils";
 import { sanitizeText } from "@/lib/validation/quiz";
 import { generateToken, sendVerificationEmail } from "@/lib/email";
 import { assertSameOrigin } from "@/lib/security";
+import { audit } from "@/lib/audit";
+import { withRetry } from "@/lib/retry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,6 +37,7 @@ export async function POST(req: Request) {
     const ip = getClientIp(req);
     const { success, reset } = await rateLimit(`join:${ip}`);
     if (!success) {
+      await audit("rate_limited", { ip, detail: { route: "waitlist/join" } });
       return NextResponse.json(
         { error: "Too many attempts. Please try again in a minute." },
         {
@@ -127,7 +130,32 @@ export async function POST(req: Request) {
       }
     }
 
-    const delivery = await sendVerificationEmail(email, token);
+    await audit(existing ? "signup_resent" : "signup_requested", {
+      waitlistId: existing?.id ?? null,
+      email,
+      ip,
+    });
+
+    /**
+     * Retry only transient delivery failures. `not_configured` means the API
+     * key is absent — retrying that just adds latency to an answer we already
+     * know, so we return it immediately.
+     */
+    const delivery = await withRetry(
+      async () => {
+        const result = await sendVerificationEmail(email, token);
+        if (!result.sent && result.reason === "provider_error") {
+          throw Object.assign(new Error("email_provider_error"), { retryable: true });
+        }
+        return result;
+      },
+      {
+        attempts: 3,
+        baseMs: 200,
+        maxMs: 1500,
+        shouldRetry: (e) => (e as { retryable?: boolean })?.retryable === true,
+      }
+    ).catch(() => ({ sent: false, reason: "provider_error" }) as const);
 
     if (!delivery.sent) {
       // Be honest rather than showing a fake success screen.

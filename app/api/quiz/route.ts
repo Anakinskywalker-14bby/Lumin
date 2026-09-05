@@ -4,6 +4,7 @@ import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { validateQuiz, sanitizeText } from "@/lib/validation/quiz";
 import { hashToken, sendQuizCompleteEmail } from "@/lib/email";
 import { assertSameOrigin } from "@/lib/security";
+import { audit } from "@/lib/audit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
     const ip = getClientIp(req);
     const { success } = await rateLimit(`quiz:${ip}`);
     if (!success) {
+      await audit("rate_limited", { ip, detail: { route: "quiz" } });
       return NextResponse.json(
         { error: "Too many attempts. Please wait a moment." },
         { status: 429 }
@@ -54,6 +56,8 @@ export async function POST(req: Request) {
 
     const validation = validateQuiz(body);
     if (!validation.ok) {
+      // Records the rejection reason, not the rejected payload.
+      await audit("quiz_rejected", { ip, detail: { reason: validation.error } });
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
@@ -105,6 +109,13 @@ export async function POST(req: Request) {
         quiz_completed_at: new Date().toISOString(),
       })
       .eq("id", entry.id);
+
+    await audit("quiz_submitted", {
+      waitlistId: entry.id,
+      email: entry.email,
+      ip,
+      detail: { position: entry.position },
+    });
 
     // Best-effort confirmation; never blocks the response.
     void sendQuizCompleteEmail(

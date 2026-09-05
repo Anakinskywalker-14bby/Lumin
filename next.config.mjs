@@ -13,11 +13,11 @@ const csp = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://news.google.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://news.google.com https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https://raw.githubusercontent.com https://cdn.cosmos.so https://news.google.com https://www.gstatic.com https://ssl.gstatic.com https://lh3.googleusercontent.com",
-  "connect-src 'self' https://hazjyonpqungkgchqgro.supabase.co https://news.google.com",
+  "connect-src 'self' https://hazjyonpqungkgchqgro.supabase.co https://news.google.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
   "frame-src https://news.google.com",
   "manifest-src 'self'",
   "upgrade-insecure-requests",
@@ -44,6 +44,10 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
+  // Pin the workspace root. Without this Next walks up and can pick a
+  // stray parent-directory lockfile, which changes what gets traced into
+  // the serverless bundle.
+  outputFileTracingRoot: import.meta.dirname,
   async headers() {
     return [
       { source: "/(.*)", headers: securityHeaders },

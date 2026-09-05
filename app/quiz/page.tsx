@@ -11,12 +11,13 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function QuizPage({
+export default async function QuizPage({
   searchParams,
 }: {
-  searchParams: { token?: string };
+  searchParams: Promise<{ token?: string }>;
 }) {
-  const token = typeof searchParams.token === "string" ? searchParams.token : "";
+  const params = await searchParams;
+  const token = typeof params.token === "string" ? params.token : "";
 
   return (
     <main className="min-h-screen" style={{ background: "#f9f9f7" }}>

@@ -7,11 +7,51 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          detail: Json
+          email_hash: string | null
+          event: string
+          id: number
+          ip_hash: string | null
+          occurred_at: string
+          waitlist_id: string | null
+        }
+        Insert: {
+          detail?: Json
+          email_hash?: string | null
+          event: string
+          id?: never
+          ip_hash?: string | null
+          occurred_at?: string
+          waitlist_id?: string | null
+        }
+        Update: {
+          detail?: Json
+          email_hash?: string | null
+          event?: string
+          id?: never
+          ip_hash?: string | null
+          occurred_at?: string
+          waitlist_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_waitlist_id_fkey"
+            columns: ["waitlist_id"]
+            isOneToOne: false
+            referencedRelation: "waitlist"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -130,9 +170,6 @@ export type Database = {
       }
       waitlist: {
         Row: {
-          amount_paid_cents: number | null
-          configuration: Json
-          confirmed_at: string | null
           created_at: string
           email: string
           id: string
@@ -140,8 +177,6 @@ export type Database = {
           quiz_completed_at: string | null
           signup_ip_hash: string | null
           status: Database["public"]["Enums"]["waitlist_status"]
-          stripe_payment_intent_id: string | null
-          stripe_session_id: string | null
           updated_at: string
           user_agent: string | null
           user_id: string | null
@@ -150,9 +185,6 @@ export type Database = {
           verified_at: string | null
         }
         Insert: {
-          amount_paid_cents?: number | null
-          configuration?: Json
-          confirmed_at?: string | null
           created_at?: string
           email: string
           id?: string
@@ -160,8 +192,6 @@ export type Database = {
           quiz_completed_at?: string | null
           signup_ip_hash?: string | null
           status?: Database["public"]["Enums"]["waitlist_status"]
-          stripe_payment_intent_id?: string | null
-          stripe_session_id?: string | null
           updated_at?: string
           user_agent?: string | null
           user_id?: string | null
@@ -170,9 +200,6 @@ export type Database = {
           verified_at?: string | null
         }
         Update: {
-          amount_paid_cents?: number | null
-          configuration?: Json
-          confirmed_at?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -180,8 +207,6 @@ export type Database = {
           quiz_completed_at?: string | null
           signup_ip_hash?: string | null
           status?: Database["public"]["Enums"]["waitlist_status"]
-          stripe_payment_intent_id?: string | null
-          stripe_session_id?: string | null
           updated_at?: string
           user_agent?: string | null
           user_id?: string | null
@@ -305,6 +330,23 @@ export type Enums<
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
