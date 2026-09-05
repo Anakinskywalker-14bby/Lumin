@@ -16,7 +16,7 @@ const csp = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://news.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' data: blob: https://raw.githubusercontent.com https://cdn.cosmos.so https://news.google.com",
+  "img-src 'self' data: blob: https://raw.githubusercontent.com https://cdn.cosmos.so https://news.google.com https://www.gstatic.com https://ssl.gstatic.com https://lh3.googleusercontent.com",
   "connect-src 'self' https://hazjyonpqungkgchqgro.supabase.co https://news.google.com",
   "frame-src https://news.google.com",
   "manifest-src 'self'",
