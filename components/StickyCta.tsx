@@ -4,39 +4,56 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 /**
- * Mobile-only sticky CTA. Appears after the hero, hides once the signup
- * section is on screen so it never covers the form it points at.
+ * Mobile-only sticky CTA.
+ *
+ * Uses IntersectionObserver rather than scroll math: Lenis' smooth scrolling
+ * makes native scroll events unreliable, but IntersectionObserver is driven
+ * by the compositor and fires correctly either way.
+ *
+ * Shows once the hero has scrolled away, hides again when the signup section
+ * is on screen so it never covers the form it points at.
  */
 export function StickyCta() {
-  const [show, setShow] = useState(false);
+  const [heroGone, setHeroGone] = useState(false);
+  const [betaVisible, setBetaVisible] = useState(false);
 
   useEffect(() => {
-    const target = document.getElementById("beta");
+    const hero = document.querySelector("section");
+    const beta = document.getElementById("beta");
 
-    const onScroll = () => {
-      const pastHero = window.scrollY > window.innerHeight * 0.6;
-      let betaVisible = false;
-      if (target) {
-        const r = target.getBoundingClientRect();
-        betaVisible = r.top < window.innerHeight && r.bottom > 0;
-      }
-      setShow(pastHero && !betaVisible);
-    };
+    const observers: IntersectionObserver[] = [];
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    if (hero) {
+      const o = new IntersectionObserver(
+        ([entry]) => setHeroGone(!entry.isIntersecting),
+        { threshold: 0 }
+      );
+      o.observe(hero);
+      observers.push(o);
+    } else {
+      // No hero found: don't hide the CTA forever.
+      setHeroGone(true);
+    }
+
+    if (beta) {
+      const o = new IntersectionObserver(
+        ([entry]) => setBetaVisible(entry.isIntersecting),
+        { threshold: 0 }
+      );
+      o.observe(beta);
+      observers.push(o);
+    }
+
+    return () => observers.forEach((o) => o.disconnect());
   }, []);
+
+  const show = heroGone && !betaVisible;
 
   return (
     <div
       className="md:hidden fixed inset-x-0 bottom-0 z-40 p-3 transition-transform duration-300"
       style={{
-        transform: show ? "translateY(0)" : "translateY(120%)",
+        transform: show ? "translateY(0)" : "translateY(140%)",
         pointerEvents: show ? "auto" : "none",
       }}
       aria-hidden={!show}
@@ -44,7 +61,14 @@ export function StickyCta() {
       <Link
         href="/#beta"
         className="neo-shadow neo-border block w-full py-4 text-center"
-        style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16, letterSpacing: "0.9px", color: "#1a1c1b" }}
+        style={{
+          background: "#e8e883",
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontWeight: 700,
+          fontSize: 16,
+          letterSpacing: "0.9px",
+          color: "#1a1c1b",
+        }}
         tabIndex={show ? 0 : -1}
       >
         JOIN THE WAITLIST — FREE
