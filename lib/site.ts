@@ -1,7 +1,12 @@
 /** Single source of truth for site identity + structured data. */
 
+/**
+ * Canonical origin. Must be a hostname that actually serves this build —
+ * a canonical tag pointing at a different deployment tells Google to index
+ * that one instead. See the note in .env.production.
+ */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumin-pink.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lumin-site-bay.vercel.app";
 
 export const SITE_NAME = "Lumin";
 
