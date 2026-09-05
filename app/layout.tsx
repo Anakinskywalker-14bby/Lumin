@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Manrope, Hanken_Grotesk } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { CookieBanner } from "@/components/CookieBanner";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 import "./globals.css";
 
@@ -26,14 +27,8 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  openGraph: {
-    siteName: SITE_NAME,
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-  },
+  openGraph: { siteName: SITE_NAME, type: "website", locale: "en_US" },
+  twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
 };
 
@@ -41,10 +36,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${manrope.variable} ${hanken.variable} ${GeistSans.variable}`}>
       <body>
-        <SmoothScroll>{children}</SmoothScroll>
-        {/* Google Preferred Sources library — renders the official
-            "Add as preferred source" button on elements carrying the
-            google-add-preferred-source-btn attribute. */}
+        {/* Keyboard users can jump straight past the nav. */}
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+        <SmoothScroll>
+          <div id="main">{children}</div>
+        </SmoothScroll>
+        <CookieBanner />
+        {/* Google Preferred Sources button library. */}
         <Script
           src="https://news.google.com/swg/js/v1/publisher.js"
           strategy="afterInteractive"

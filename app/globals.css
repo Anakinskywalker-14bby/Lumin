@@ -182,3 +182,46 @@ body {
 /* Deep Scan readout fill */
 @keyframes scanFill { from { width: 0; } }
 .scan-fill { animation: scanFill 1.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Skip link: visible only on keyboard focus */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 14px 22px;
+  background: #e8e883;
+  border: 3px solid #1a1c1b;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #1a1c1b;
+}
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+}
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 3px solid #1a1c1b;
+  outline-offset: 3px;
+}
+
+/* Screen-reader-only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Never allow horizontal scroll on any breakpoint */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}

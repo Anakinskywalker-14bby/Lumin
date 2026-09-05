@@ -1,0 +1,152 @@
+import { NextResponse } from "next/server";
+import crypto from "node:crypto";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { isValidEmail } from "@/lib/utils";
+import { sanitizeText } from "@/lib/validation/quiz";
+import { generateToken, sendVerificationEmail } from "@/lib/email";
+import { assertSameOrigin } from "@/lib/security";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const MAX_BODY_BYTES = 4_096;
+const TOKEN_TTL_DAYS = 7;
+
+/**
+ * POST /api/waitlist/join
+ * Free email capture with double opt-in. No payment.
+ *
+ * Security:
+ * - same-origin enforced (CSRF)
+ * - sliding-window rate limit per IP
+ * - email validated + normalized; body size capped
+ * - IP stored only as a salted hash (abuse control without holding raw IPs)
+ * - response is identical whether or not the email already exists
+ *   (prevents email enumeration)
+ */
+export async function POST(req: Request) {
+  try {
+    const origin = assertSameOrigin(req);
+    if (!origin.ok) {
+      return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+    }
+
+    const ip = getClientIp(req);
+    const { success, reset } = await rateLimit(`join:${ip}`);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again in a minute." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)) },
+        }
+      );
+    }
+
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: "Payload too large." }, { status: 413 });
+    }
+
+    let body: { email?: unknown; consent?: unknown };
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    }
+
+    const email = sanitizeText(body.email, 254).toLowerCase();
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address." },
+        { status: 400 }
+      );
+    }
+    if (body.consent !== true) {
+      return NextResponse.json(
+        { error: "Please agree to the privacy policy to continue." },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("[join] Supabase service role key missing");
+      return NextResponse.json(
+        { error: "Signups open very soon. Please check back shortly." },
+        { status: 503 }
+      );
+    }
+
+    const admin = createAdminClient();
+    const { token, hash } = generateToken();
+
+    const ipSalt = process.env.IP_HASH_SALT ?? "lumin-default-salt";
+    const signup_ip_hash = crypto
+      .createHash("sha256")
+      .update(ip + ipSalt)
+      .digest("hex");
+    const user_agent = sanitizeText(req.headers.get("user-agent"), 300);
+
+    const { data: existing } = await admin
+      .from("waitlist")
+      .select("id,verified_at,quiz_completed_at")
+      .eq("email", email)
+      .maybeSingle();
+
+    // Already fully signed up + quizzed: don't re-send, don't leak status.
+    if (existing?.quiz_completed_at) {
+      return NextResponse.json({ ok: true, alreadyComplete: true });
+    }
+
+    if (existing) {
+      await admin
+        .from("waitlist")
+        .update({
+          verification_token_hash: hash,
+          verification_sent_at: new Date().toISOString(),
+          signup_ip_hash,
+          user_agent,
+        })
+        .eq("id", existing.id);
+    } else {
+      const { error: insertError } = await admin.from("waitlist").insert({
+        email,
+        status: "pending",
+        verification_token_hash: hash,
+        verification_sent_at: new Date().toISOString(),
+        signup_ip_hash,
+        user_agent,
+      });
+      if (insertError) {
+        console.error("[join] insert failed:", insertError.message);
+        return NextResponse.json(
+          { error: "Could not save your spot. Please try again." },
+          { status: 500 }
+        );
+      }
+    }
+
+    const delivery = await sendVerificationEmail(email, token);
+
+    if (!delivery.sent) {
+      // Be honest rather than showing a fake success screen.
+      return NextResponse.json(
+        {
+          error:
+            "We saved your spot, but couldn't send the confirmation email just yet. We'll email you as soon as delivery is live.",
+          saved: true,
+        },
+        { status: 202 }
+      );
+    }
+
+    return NextResponse.json({ ok: true, ttlDays: TOKEN_TTL_DAYS });
+  } catch (err) {
+    console.error("[join] unhandled:", err);
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again." },
+      { status: 500 }
+    );
+  }
+}

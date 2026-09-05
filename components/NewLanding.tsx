@@ -1,23 +1,18 @@
 "use client";
 
 /**
- * Lumin — neo-brutalist landing (ported from the Figma Make export
- * "Website Design with Animations").
- * Cream canvas, 3px ink borders, hard offset shadows, sticker chips.
+ * Lumin - neo-brutalist landing.
  *
- * Port changes vs. the export:
- * - Vite image imports → repo assets served from GitHub raw
- * - Beta section: raw card-number inputs REMOVED (never collect card data
- *   directly — PCI). Email → existing /api/checkout → Stripe hosted
- *   checkout, $1.00 (matches the live backend).
- * - Encoding artifacts (mojibake emoji/dashes) fixed.
- * - "Compounded formulas" copy adjusted to the affiliate model.
+ * Signup is free: email -> double opt-in -> skin quiz. No payment,
+ * no card fields anywhere on this page (see components/SignupSection).
  */
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { SiteNav } from "@/components/SiteNav";
+import { SignupSection } from "@/components/SignupSection";
+import { StickyCta } from "@/components/StickyCta";
 import svgPaths from "@/lib/svg-design";
-import { isValidEmail } from "@/lib/utils";
 
 const ASSET = "https://raw.githubusercontent.com/Anakinskywalker-14bby/Lumin/main/public/design";
 const imgHand = `${ASSET}/hand.png`;
@@ -52,43 +47,6 @@ function useFadeIn(threshold = 0.15) {
 }
 
 // ─── Nav ────────────────────────────────────────────────────────────
-function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", h);
-    return () => window.removeEventListener("scroll", h);
-  }, []);
-
-  return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-16 h-[72px] transition-all duration-300"
-      style={{
-        background: "#f9f9f7",
-        borderBottom: "3px solid #1a1c1b",
-        boxShadow: scrolled ? "0 4px 0 #1a1c1b" : "4px 4px 0 #1a1c1b",
-      }}
-    >
-      <div style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontWeight: 900, fontStyle: "italic", fontSize: 24, letterSpacing: -1.2, color: "#1a1c1b" }}>
-        Lumin
-      </div>
-      <div className="hidden md:flex items-center gap-6">
-        <Link href="/about" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#1a1c1b" }}>ABOUT</Link>
-        <a href="/#solution" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#1a1c1b" }}>HOW IT WORKS</a>
-        <a href="/#beta" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#616207", textDecoration: "underline" }}>BETA</a>
-      </div>
-      <a
-        href="#beta"
-        className="neo-shadow-sm neo-border px-7 py-2.5"
-        style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "0.7px", color: "#1a1c1b", cursor: "pointer" }}
-      >
-        SIGN UP
-      </a>
-    </nav>
-  );
-}
-
 // ─── Hero ───────────────────────────────────────────────────────────
 function HeroSection() {
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
@@ -149,7 +107,7 @@ function HeroSection() {
 
           <p style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 400, fontSize: 18, color: "#484739", lineHeight: 1.6 }}>
             Stop guessing. Start knowing. AI skin analysis for the modern age.
-            Join the beta to get your personalized hydration protocol.
+            Join the free beta and get a routine built around your skin.
           </p>
 
           <div className="flex gap-4 flex-wrap">
@@ -246,7 +204,7 @@ function DropperSection() {
               love, matched to what your skin is really doing.
             </p>
             <a href="#beta" className="neo-shadow-sm neo-border px-7 py-4 w-full inline-block text-center" style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 16, letterSpacing: "0.9px", color: "#1a1c1b", cursor: "pointer" }}>
-              GET YOUR ROUTINE →
+              GET YOUR FREE ROUTINE →
             </a>
           </div>
         </div>
@@ -624,115 +582,6 @@ function GlowOClockSection() {
   );
 }
 
-// ─── Beta Signup — wired to the REAL Stripe checkout ────────────────
-function BetaSection() {
-  const { ref, visible } = useFadeIn();
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function reserve(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!isValidEmail(email)) {
-      setError("That email doesn't look right.");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      let data: { url?: string; error?: string } = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error("The waitlist is warming up — try again in a minute.");
-      }
-      if (!res.ok || !data.url) {
-        throw new Error(data.error ?? "Something went wrong. Try again.");
-      }
-      window.location.assign(data.url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <section
-      id="beta"
-      ref={ref as React.RefObject<HTMLElement>}
-      className="relative w-full"
-      style={{ background: "#f9f9f7", borderBottom: "3px solid #1a1c1b", opacity: visible ? 1 : 0, transition: "opacity 0.9s ease 0.15s, transform 0.9s ease 0.15s", transform: visible ? "none" : "translateY(40px)" }}
-    >
-      <div className="max-w-[800px] mx-auto px-6 md:px-16 py-24">
-        <div className="relative neo-shadow neo-border p-8 md:p-14" style={{ background: "#f9f9f7" }}>
-          <div className="absolute neo-shadow-sm neo-border px-5 py-2.5" style={{ background: "#e8e883", top: -28, left: -16, transform: "rotate(-4deg)", fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 18, color: "#1a1c1b" }}>
-            🔒 Limited Spots
-          </div>
-
-          <div className="flex flex-col gap-4 mb-10">
-            <h2 style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 3vw, 36px)", color: "#1a1c1b", textAlign: "center", margin: 0 }}>
-              Secure Your Spot in the Beta
-            </h2>
-            <p style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 400, fontSize: 16, color: "#484739", textAlign: "center", lineHeight: 1.6, margin: 0 }}>
-              A fully refundable $1 deposit ensures you&apos;re serious about
-              fixing your skin. We only have capacity for 500 early adopters.
-            </p>
-          </div>
-
-          <form onSubmit={reserve}>
-            <div className="flex flex-col gap-2 mb-4">
-              <label htmlFor="beta-email" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1px", color: "#1a1c1b", textTransform: "uppercase" }}>Email Address</label>
-              <input
-                id="beta-email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="neo-border px-5 py-5 w-full outline-none"
-                style={{ background: "#f9f9f7", fontFamily: "'Work Sans', sans-serif", fontSize: 16, color: "#1a1c1b" }}
-              />
-            </div>
-
-            <div className="neo-border p-5 mb-6" style={{ background: "#f4f4f2" }}>
-              <div className="flex items-center justify-between">
-                <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1px", color: "#1a1c1b", textTransform: "uppercase" }}>Beta Access Deposit</span>
-                <span style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontWeight: 800, fontSize: 18, color: "#1a1c1b" }}>$1.00</span>
-              </div>
-              <p style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 400, fontSize: 14, color: "#484739", margin: "12px 0 0 0" }}>
-                Card details are entered on Stripe&apos;s secure checkout — we
-                never see or store them.
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="neo-shadow neo-border py-7 w-full mb-4"
-              style={{ background: "#e8e883", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 20, letterSpacing: "1px", color: "#1a1c1b", cursor: "pointer", textTransform: "uppercase", opacity: submitting ? 0.6 : 1 }}
-            >
-              {submitting ? "OPENING SECURE CHECKOUT…" : "PAY $1 & JOIN WAITLIST"}
-            </button>
-            {error && (
-              <p role="alert" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, color: "#ba1a1a", textAlign: "center", margin: "0 0 12px 0" }}>
-                {error}
-              </p>
-            )}
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 13, color: "#484739", textAlign: "center", opacity: 0.7, margin: 0 }}>
-              Secure payment via Stripe. Fully refundable.
-            </p>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── Footer ─────────────────────────────────────────────────────────
 function NewFooter() {
   return (
@@ -744,10 +593,11 @@ function NewFooter() {
       </div>
       <div className="flex gap-6 flex-wrap justify-center">
         <Link href="/about" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>ABOUT US</Link>
-        <Link href="/legal" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>PRIVACY &amp; TERMS</Link>
-        <a href="/#beta" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>JOIN BETA</a>
+        <Link href="/privacy" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>PRIVACY</Link>
+        <Link href="/terms" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>TERMS</Link>
+        <a href="/#beta" style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: "1.6px", color: "#001f27" }}>JOIN FREE</a>
       </div>
-      <span style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1.6px", color: "#001f27" }}>© 2026 LUMIN. BUILT FOR THE BOLD.</span>
+      <span style={{ fontFamily: "'Work Sans', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: "1.6px", color: "#001f27" }}>{`© ${new Date().getFullYear()} LUMIN. BUILT FOR THE BOLD.`}</span>
     </footer>
   );
 }
@@ -756,15 +606,16 @@ function NewFooter() {
 export default function NewLanding() {
   return (
     <div style={{ background: "#f9f9f7" }}>
-      <Nav />
+      <SiteNav />
       <HeroSection />
       <DropperSection />
       <ProblemSection />
       <SolutionSection />
       <GallerySection />
       <GlowOClockSection />
-      <BetaSection />
+      <SignupSection />
       <NewFooter />
+      <StickyCta />
     </div>
   );
 }

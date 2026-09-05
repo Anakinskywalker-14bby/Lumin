@@ -1,5 +1,3 @@
-// Generated from the live Supabase project (hazjyonpqungkgchqgro) via MCP
-// `generate_typescript_types` — regenerate after future migrations.
 export type Json =
   | string
   | number
@@ -53,6 +51,83 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_responses: {
+        Row: {
+          age_band: string | null
+          allergies: string | null
+          breakout_frequency: string | null
+          climate: string | null
+          created_at: string
+          current_treatments: string | null
+          email: string
+          full_name: string | null
+          gender: string | null
+          id: string
+          lifestyle: string | null
+          monthly_spend: string | null
+          post_acne_marks: string | null
+          pregnancy_status: string | null
+          primary_concern: string | null
+          routine_depth: string | null
+          sensitivity: string | null
+          skin_type: string | null
+          updated_at: string
+          waitlist_id: string
+        }
+        Insert: {
+          age_band?: string | null
+          allergies?: string | null
+          breakout_frequency?: string | null
+          climate?: string | null
+          created_at?: string
+          current_treatments?: string | null
+          email: string
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          lifestyle?: string | null
+          monthly_spend?: string | null
+          post_acne_marks?: string | null
+          pregnancy_status?: string | null
+          primary_concern?: string | null
+          routine_depth?: string | null
+          sensitivity?: string | null
+          skin_type?: string | null
+          updated_at?: string
+          waitlist_id: string
+        }
+        Update: {
+          age_band?: string | null
+          allergies?: string | null
+          breakout_frequency?: string | null
+          climate?: string | null
+          created_at?: string
+          current_treatments?: string | null
+          email?: string
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          lifestyle?: string | null
+          monthly_spend?: string | null
+          post_acne_marks?: string | null
+          pregnancy_status?: string | null
+          primary_concern?: string | null
+          routine_depth?: string | null
+          sensitivity?: string | null
+          skin_type?: string | null
+          updated_at?: string
+          waitlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_responses_waitlist_id_fkey"
+            columns: ["waitlist_id"]
+            isOneToOne: false
+            referencedRelation: "waitlist"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waitlist: {
         Row: {
           amount_paid_cents: number | null
@@ -62,11 +137,17 @@ export type Database = {
           email: string
           id: string
           position: number
+          quiz_completed_at: string | null
+          signup_ip_hash: string | null
           status: Database["public"]["Enums"]["waitlist_status"]
           stripe_payment_intent_id: string | null
           stripe_session_id: string | null
           updated_at: string
+          user_agent: string | null
           user_id: string | null
+          verification_sent_at: string | null
+          verification_token_hash: string | null
+          verified_at: string | null
         }
         Insert: {
           amount_paid_cents?: number | null
@@ -76,11 +157,17 @@ export type Database = {
           email: string
           id?: string
           position?: never
+          quiz_completed_at?: string | null
+          signup_ip_hash?: string | null
           status?: Database["public"]["Enums"]["waitlist_status"]
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
+          user_agent?: string | null
           user_id?: string | null
+          verification_sent_at?: string | null
+          verification_token_hash?: string | null
+          verified_at?: string | null
         }
         Update: {
           amount_paid_cents?: number | null
@@ -90,11 +177,17 @@ export type Database = {
           email?: string
           id?: string
           position?: never
+          quiz_completed_at?: string | null
+          signup_ip_hash?: string | null
           status?: Database["public"]["Enums"]["waitlist_status"]
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
+          user_agent?: string | null
           user_id?: string | null
+          verification_sent_at?: string | null
+          verification_token_hash?: string | null
+          verified_at?: string | null
         }
         Relationships: []
       }
@@ -106,7 +199,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      waitlist_status: "pending" | "active_waitlist" | "cancelled"
+      waitlist_status: "pending" | "active_waitlist" | "cancelled" | "verified"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -122,12 +215,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -151,11 +244,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -176,11 +269,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -201,11 +294,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -217,7 +310,7 @@ export type Enums<
 export const Constants = {
   public: {
     Enums: {
-      waitlist_status: ["pending", "active_waitlist", "cancelled"],
+      waitlist_status: ["pending", "active_waitlist", "cancelled", "verified"],
     },
   },
 } as const
