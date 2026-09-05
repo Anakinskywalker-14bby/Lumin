@@ -29,18 +29,41 @@ function useFadeIn(threshold = 0.15) {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+
+    // Fail open: if IntersectionObserver is unavailable (older browsers,
+    // some privacy modes, non-rendering crawlers) show the content rather
+    // than leaving the page permanently blank.
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+
+    let done = false;
+    const reveal = () => {
+      if (done) return;
+      done = true;
+      setVisible(true);
+    };
+
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          reveal();
           obs.disconnect();
         }
       },
       { threshold }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+
+    // Safety net: if no callback has arrived in 1.5s, reveal anyway.
+    // Content visibility must never depend on an animation firing.
+    const failsafe = window.setTimeout(reveal, 1500);
+
+    return () => {
+      window.clearTimeout(failsafe);
+      obs.disconnect();
+    };
   }, [threshold]);
 
   return { ref, visible };

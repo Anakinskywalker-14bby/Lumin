@@ -21,7 +21,14 @@ export function StickyCta() {
     const hero = document.querySelector("section");
     const beta = document.getElementById("beta");
 
+    if (typeof IntersectionObserver === "undefined") {
+      setHeroGone(true);
+      return;
+    }
+
     const observers: IntersectionObserver[] = [];
+    // Failsafe: reveal after 2s even if no callback arrives.
+    const failsafe = window.setTimeout(() => setHeroGone(true), 2000);
 
     if (hero) {
       const o = new IntersectionObserver(
@@ -44,7 +51,10 @@ export function StickyCta() {
       observers.push(o);
     }
 
-    return () => observers.forEach((o) => o.disconnect());
+    return () => {
+      window.clearTimeout(failsafe);
+      observers.forEach((o) => o.disconnect());
+    };
   }, []);
 
   const show = heroGone && !betaVisible;
